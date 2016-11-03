@@ -373,6 +373,7 @@
         addFilterListeners("subscription", message.filter);
         break;
       case "subscriptions.remove":
+      debugger
         var subscription = Subscription.fromURL(message.url);
         if (subscription.url in FilterStorage.knownSubscriptions)
           FilterStorage.removeSubscription(subscription);

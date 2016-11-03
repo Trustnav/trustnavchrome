@@ -7,6 +7,7 @@ Initialize.js Se encarga de leer todas las funciones almacenadas en actions y ej
 
 
 var actions = {};
+var isAdBlockEnabled = true;
 var eventsInfo = {
     rating : {
         first : true,
@@ -38,6 +39,19 @@ actions.run = function() {
  *
  */
 
+actions.url = function(){
+    $(document).ready(function(){
+        chrome.tabs.getSelected(null, function(tab) {
+            var url = new URL(tab.url);
+            var domain = parseDomain(url.hostname);
+            if(!validateUrl(url)){
+                $("#starRatingContainer").css("display", "none");
+                $("#ratingText").css("display", "none");
+            }
+        });
+    });
+}
+
 
 /**
  * @function setCountBlocked()
@@ -63,21 +77,6 @@ actions.getCountBlocked = function() {
 };
 
 /**
- * @function setCountBlockeds()
- * @desc Valida que la pagina tenga una whiteList y incrusta en el html si esta activada o no.
- *
- */
-
-actions.setCountBlockeds = function() {
-    if(checkWhitelisted(page)){
-        $('.isEnabled').html("Adblocker disabled");
-        return $('#enabled').attr('checked', false);
-    }
-    $('.isEnabled').html("Adblocker enabled");
-    return $('#enabled').attr('checked', true);
-};
-
-/**
  * @function enabled()
  * @desc Verifica si el adBlock esta habilitado/desabilitado y cambia el icono dinamicamente, envia un evento de activacion y cambia el html.
  *
@@ -90,8 +89,7 @@ actions.enabled = function() {
         chrome.tabs.getSelected(null, function(tab) {
             var url = new URL(tab.url);
             var domain = parseDomain(url.hostname);
-            var isEnabled = $('#enabled').is(':checked');
-
+            var isEnabled = $('#enabled').data('checked');
             if (!isEnabled) {
                 newEventData.type = "ADBLOCK_DISABLED";
                 newEventData.value = {
@@ -100,7 +98,8 @@ actions.enabled = function() {
                 chrome.browserAction.setIcon({
                     path: "../popup/img/logo-gris.png"
                 });
-            } else {
+            } else
+            if(!FilterStorage.isAllWhitelist()){
                 newEventData.type = "ADBLOCK_ENABLED";
                 newEventData.value = {
                     domain : domain,
@@ -109,7 +108,7 @@ actions.enabled = function() {
                     'action' : 'getRating',
                     'domain' : domain,
                 }, function(response) {
-                    if (response.ratingData.averageRating < 3 && response.ratingData.averageRating  != 0) {
+                    if (response.ratingData.averageRating < 3 && response.ratingData.averageRating  != 0 && response.ratingData.totalClients > 5) {
                         chrome.browserAction.setIcon({
                             path: "../popup/img/logo-rojo.png"
                         });
@@ -130,22 +129,299 @@ actions.enabled = function() {
             }
 
             if (!isEnabled) {
-                $(".tooltiptext").html("Enable Trustnav in this site/domain");
-                $('.isEnabled').html("Adblocker disabled");
+                $('#enabled').data('checked', true);
+                $('#enabled').attr("tkey","trustnav-disable-site");
             } else {
-                $(".tooltiptext").html("Disable Trustnav in this site/domain");
-                $('.isEnabled').html("Adblocker enabled");
+                $('#enabled').data('checked', false);
+                $('#enabled').attr("tkey","trustnav-enable-site");
             }
 
+            translateDinamic();
             sendMessage({
                 'action': 'change_status',
                 'value': isEnabled,
-                'domain': domain,
+                'domain': domain
             }, function(){});
         });
 
     });
 }
+
+actions.allEnabled = function() {
+    $("#allEnabled").click(function() {
+        var newEventData = {}
+
+        chrome.tabs.getSelected(null, function(tab) {
+            var url = new URL(tab.url);
+            var domain = parseDomain(url.hostname);
+            var isEnabled = $('#allEnabled').is(':checked');
+
+            if (!isEnabled) {
+                newEventData.type = "ADBLOCK_DISABLED_ALL_SITES";
+                chrome.browserAction.setIcon({
+                    path: "../popup/img/logo-gris.png"
+                });
+            } else
+            if(!checkWhitelisted(page)){
+                newEventData.type = "ADBLOCK_ENABLED_ALL_SITES";
+                sendMessage({
+                    'action' : 'getRating',
+                    'domain' : domain,
+                }, function(response) {
+                    if (response.ratingData.averageRating < 3 && response.ratingData.averageRating  != 0 && response.ratingData.totalClients > 5) {
+                        chrome.browserAction.setIcon({
+                            path: "../popup/img/logo-rojo.png"
+                        });
+                    } else {
+                        chrome.browserAction.setIcon({
+                            path: "../popup/img/logo.png"
+                        });
+                    }
+                });
+            }
+
+            newEventData.value = {};
+            sendMessage({
+                'action': 'newEvent',
+                'data': newEventData,
+            });
+
+            if (!isEnabled) {
+                $('#enabled').attr("tkey","trustnav-disable-site");
+                $(".allEnableInfo").attr("tkey","trustnav-all-enable");
+                $('.isEnabled').attr("tkey","trustnav-is-block-disabled");
+            } else {
+                $('#enabled').attr("tkey","trustnav-enable-site");
+                $(".allEnableInfo").attr("tkey","trustnav-all-disable");
+                $('.isEnabled').attr("tkey","trustnav-is-block-enabled");
+            }
+
+            translateDinamic();
+
+            isAdBlockEnabled = isEnabled;
+
+            sendMessage({
+                'action': 'change_status_all',
+                'value': $("#checked").is(':checked'),
+                'allEnable' : isEnabled,
+                'domain': domain
+            }, function(){});
+        });
+    });
+}
+
+/**
+ * @function setCountBlockeds()
+ * @desc Valida que la pagina tenga una whiteList y incrusta en el html si esta activada o no.
+ *
+ */
+
+actions.setCountBlockeds = function() {
+    if(page && checkWhitelisted && checkWhitelisted(page)){
+        filter = checkWhitelisted(page).text;
+        if(filter == "@@||*^$document"){
+            //general block
+            $('.isEnabled').attr("tkey","trustnav-is-block-disabled");
+            $('#allEnabled').prop('checked', false);
+            return;
+        }
+        $('#enabled').attr("tkey","trustnav-disable-site");
+        $('#enabled').data('checked', true);
+        if(FilterStorage.isAllWhitelist()){
+            $('.isEnabled').attr("tkey","trustnav-is-block-disabled");
+            $('#allEnabled').prop('checked', false);
+        }
+        translateDinamic();
+        return;
+    }
+
+    //Si esta todo habilitado!
+    $('#enabled').attr("tkey","trustnav-enable-site");
+    $('.isEnabled').attr("tkey","trustnav-is-block-enabled");
+
+    translateDinamic();
+
+    $("#enabled").data("checked",false);
+    $('#allEnabled').attr('checked', true);
+    return;
+};
+
+/**
+ * @function onOpenPopUp()
+ * @desc Cuando el popUp es abierto, se guara un evento y tambien le pregunta al servidor las calificaciones del dominio en particular y son seteadas en el popUp.
+ *       De esta forma el popUp contiene la informacion del sitio.
+ *
+ */
+
+actions.onOpenPopUp = function() {
+    chrome.tabs.getSelected(null, function(tab) {
+
+        var url = new URL(tab.url);
+        var domain = parseDomain(url.hostname);
+
+        //Si es una URL invalida
+        if(!validateUrl(url)) {
+            $(".ratingInfo").hide();
+            $(".no-info").attr("tkey","trustnav-not-allowed-vote");
+            translateDinamic();
+            $(".no-info").show();
+            return;
+        }
+
+        //Si la url es valida
+        var newEventData = {
+            type: "POPUP_OPENED",
+            value: {
+                domain : domain
+            },
+        }
+
+        sendMessage({
+            'action': 'newEvent',
+            'data': newEventData,
+        });
+
+        sendMessage({
+            'action': 'getRating',
+            'domain': domain
+        },
+        function(response) {
+            if (response.ratingData) {
+
+                $(".starRating input[value=" + response.ratingData.client.rating + "]").prop("checked", "true"); // Rating seteado
+
+                if (response.ratingData.client.rating != 0) {
+                    $("#commentRating").show();
+                    eventsInfo.rating.first = false;
+                    eventsInfo.rating.oldRating = response.ratingData.client.rating;
+                }
+
+                if (response.ratingData.client.comment !== "") {
+                    $(".lastCommentWrap").show();
+                    eventsInfo.comment.first = false;
+                    eventsInfo.comment.oldComment = response.ratingData.client.comment;
+                    $(".lastComment").html(response.ratingData.client.comment + '<i class="fa fa-pencil" aria-hidden="true"></i>');
+                }
+
+                if (response.ratingData.totalClients > 5) {
+                    $(".totalClients").html(response.ratingData.totalClients); // Clientes Totales
+                    $(".averageRating").html(response.ratingData.averageRating);
+                    for (var property in response.ratingData.totalRating) {
+                        if (response.ratingData.totalRating.hasOwnProperty(property)) {
+                            $(".rating-bar-" + property).css("width", response.ratingData.totalRating[property] + "%");
+                        }
+                    }
+                } else {
+                    $(".ratingInfo").hide();
+                    $(".no-info").show();
+                }
+
+                if (response.ratingData.averageRating < 3 && response.ratingData.averageRating != 0 && response.ratingData.totalClients > 5) {
+                    $(".trusnav-logo").attr("src","img/tn-red.svg");
+                    $(".isTrusted").attr("tkey","trustnav-is-no-trusted");
+                    translateDinamic();
+                }
+
+                $(".bars").addClass("width-transation");
+            }
+        });
+    });
+}
+
+
+/**
+ * @function onSendComment()
+ * @event setComment.
+ * @desc Cuando se envie un comentario genera el objeto de calificacion y el objeto de eventos, envia el evento y comentario y luego actualiza el ultimo valor del popUp dinamicamente.
+ *
+ */
+
+actions.onSendComment = function() {
+    $(document).on("click", ".submittBtn", function() {
+
+        $("#commentRating").fadeOut();
+
+        chrome.tabs.getSelected(null, function(tab) {
+
+            var url = new URL(tab.url);
+            var domain = parseDomain(url.hostname);
+
+            if (validateUrl(url)) {
+
+                if ($(".messageArea").val() === "") {
+                    $(".thanksForVote").attr("tkey","trustnav-success-vote");
+                    translateDinamic();
+                    return true;
+                }
+
+                var ratingData = {
+                    rating: $(".starRating input:checked").val(),
+                    message: $(".messageArea").val(),
+                    domain: domain
+                }
+
+                var newEventData = {
+                    type: 'COMMENT_LEFT',
+                    value: {
+                        'domain' : domain,
+                        'rating' : ratingData.rating,
+                        'comment' : ratingData.message
+                    }
+                }
+
+                if (!eventsInfo.comment.first) {
+                    newEventData.type = 'COMMENT_UPDATED';
+                    newEventData.value = {
+                        'domain' : domain,
+                        'rating' : ratingData.rating,
+                        'new_comment' : ratingData.message
+                    };
+                }
+
+                sendMessage({
+                    'action': 'newEvent',
+                    'data': newEventData,
+                });
+
+                sendMessage({
+                    'action': 'sendRating',
+                    'value': ratingData
+                },
+                function() {});
+
+                $(".messageArea").val("");
+
+                $(".lastComment").html(ratingData.message + '<i class="fa fa-pencil" aria-hidden="true"></i>');
+                $(".lastCommentWrap").show();
+                $(".thanksForVote").attr("tkey","trustnav-success-vote");
+                translateDinamic();
+
+                eventsInfo.comment.first = false;
+                eventsInfo.comment.oldComment = ratingData.message;
+
+            }
+
+        });
+
+    });
+}
+
+/**
+ * @function onEditComment()
+ * @desc Cuando se haga click en el ultimo comentario para editar, se cambiara el valor del textarea y se redimensiona el popUp
+ *
+ */
+
+actions.onEditComment = function() {
+    $(document).on("click", ".lastComment", function() {
+        $(".messageArea").val($(this).text());
+        $("#starRatingContainer .text-primary").addClass("hideText");
+        $("#starRatingContainer").css("height", "70px");
+        $(".starRating").css("transform", "scale(0.7, 0.7)");
+        $("#commentRating").fadeIn();
+    });
+}
+
 
 /**
  * @function onSetRating()
@@ -204,7 +480,8 @@ actions.onSetRating = function() {
                     'value': ratingData
                 },
                 function() {
-                    $(".thanksForVote").html("Successful vote, thanks for rating!");
+                    $(".thanksForVote").attr("tkey","trustnav-success-vote");
+                    translateDinamic();
                     getRating(domain);
                 });
 
@@ -218,172 +495,5 @@ actions.onSetRating = function() {
                 $("#commentRating").fadeIn();
             }
         });
-    });
-}
-
-/**
- * @function onSendComment()
- * @event setComment.
- * @desc Cuando se envie un comentario genera el objeto de calificacion y el objeto de eventos, envia el evento y comentario y luego actualiza el ultimo valor del popUp dinamicamente.
- *
- */
-
-actions.onSendComment = function() {
-    $(document).on("click", ".submittBtn", function() {
-
-        $("#commentRating").fadeOut();
-
-        chrome.tabs.getSelected(null, function(tab) {
-
-            var url = new URL(tab.url);
-            var domain = parseDomain(url.hostname);
-
-            if (validateUrl(url)) {
-
-                if ($(".messageArea").val() === "") {
-                    return $(".thanksForVote").html("Successful vote, thanks for rating!");
-                }
-
-                var ratingData = {
-                    rating: $(".starRating input:checked").val(),
-                    message: $(".messageArea").val(),
-                    domain: domain
-                }
-
-                var newEventData = {
-                    type: 'COMMENT_LEFT',
-                    value: {
-                        'domain' : domain,
-                        'rating' : ratingData.rating,
-                        'comment' : ratingData.message
-                    }
-                }
-
-                if (!eventsInfo.comment.first) {
-                    newEventData.type = 'COMMENT_UPDATED';
-                    newEventData.value = {
-                        'domain' : domain,
-                        'rating' : ratingData.rating,
-                        'new_comment' : ratingData.message
-                    };
-                }
-
-                sendMessage({
-                    'action': 'newEvent',
-                    'data': newEventData,
-                });
-
-                sendMessage({
-                    'action': 'sendRating',
-                    'value': ratingData
-                },
-                function() {});
-
-                $(".messageArea").val("");
-
-                $(".lastComment").html(ratingData.message + '<i class="fa fa-pencil" aria-hidden="true"></i>');
-                $(".lastCommentWrap").show();
-                $(".thanksForVote").html("Thanks for rating!");
-
-                eventsInfo.comment.first = false;
-                eventsInfo.comment.oldComment = ratingData.message;
-
-            }
-
-        });
-
-    })
-}
-
-/**
- * @function onEditComment()
- * @desc Cuando se haga click en el ultimo comentario para editar, se cambiara el valor del textarea y se redimensiona el popUp
- *
- */
-
-actions.onEditComment = function() {
-    $(document).on("click", ".lastComment", function() {
-        $(".messageArea").val($(this).text());
-        $("#starRatingContainer .text-primary").addClass("hideText");
-        $("#starRatingContainer").css("height", "70px");
-        $(".starRating").css("transform", "scale(0.7, 0.7)");
-        $("#commentRating").fadeIn();
-    });
-}
-
-/**
- * @function onOpenPopUp()
- * @desc Cuando el popUp es abierto, se guara un evento y tambien le pregunta al servidor las calificaciones del dominio en particular y son seteadas en el popUp.
- *       De esta forma el popUp contiene la informacion del sitio.
- *
- */
-
-actions.onOpenPopUp = function() {
-    chrome.tabs.getSelected(null, function(tab) {
-
-        var url = new URL(tab.url);
-        var domain = parseDomain(url.hostname);
-
-        if (validateUrl(url)) {
-            var newEventData = {
-                type: "POPUP_OPENED",
-                value: {
-                    domain : domain
-                },
-            }
-
-            sendMessage({
-                'action': 'newEvent',
-                'data': newEventData,
-            });
-
-            sendMessage({
-                'action': 'getRating',
-                'domain': domain
-            },
-            function(response) {
-                if (response.ratingData) {
-
-                    $(".starRating input[value=" + response.ratingData.client.rating + "]").prop("checked", "true"); // Rating seteado
-
-                    if (response.ratingData.client.rating != 0) {
-                        $("#commentRating").show();
-                        eventsInfo.rating.first = false;
-                        eventsInfo.rating.oldRating = response.ratingData.client.rating;
-                    }
-
-                    if (response.ratingData.client.comment !== "") {
-                        $(".lastCommentWrap").show();
-                        eventsInfo.comment.first = false;
-                        eventsInfo.comment.oldComment = response.ratingData.client.comment;
-                        $(".lastComment").html(response.ratingData.client.comment + '<i class="fa fa-pencil" aria-hidden="true"></i>');
-                    }
-
-                    if (response.ratingData.totalClients > 5) {
-                        $(".totalClients").html(response.ratingData.totalClients); // Clientes Totales
-                        $(".averageRating").html(response.ratingData.averageRating);
-                        for (var property in response.ratingData.totalRating) {
-                            if (response.ratingData.totalRating.hasOwnProperty(property)) {
-                                $(".rating-bar-" + property).css("width", response.ratingData.totalRating[property] + "%");
-                            }
-                        }
-                    } else {
-                        $(".ratingInfo").hide();
-                        $(".no-info").show();
-                    }
-
-                    if (response.ratingData.averageRating < 3 && response.ratingData.averageRating != 0 ) {
-                        $(".trusnav-logo").attr("src","img/tn-red.svg");
-                        $(".isTrusted").text("Untrusted Site!");
-                    }
-
-                    $(".bars").addClass("width-transation");
-                }
-            });
-        } else {
-            $(".ratingInfo").hide();
-            $(".no-info").html("The rate on this site is not allowed");
-            $(".no-info").show();
-        }
     });
 }

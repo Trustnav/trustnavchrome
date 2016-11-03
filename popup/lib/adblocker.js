@@ -16,7 +16,7 @@ function onLoad() {
         page = pages[0];
         if (!page || (page.url.protocol != "http:" && page.url.protocol != "https:"))
             document.body.classList.add("local");
-        else 
+        else
         if (!require("filterComposer").isPageReady(page)) {
             document.body.classList.add("nohtml");
             require("messaging").getPort(window).on("composer.ready", function(message, sender) {
@@ -30,6 +30,7 @@ function onLoad() {
             actions.run();
             if (checkWhitelisted(page)){
                 document.body.classList.add("disabled");
+                document.body.classList.add("allDisabled");
             }
 
             page.sendMessage({ type: "composer.content.getState" }, function(response) {
@@ -46,28 +47,45 @@ function onLoad() {
         });
     });
 
-    document.getElementById("enabled").addEventListener("click", toggleEnabled, false);
+    FilterStorage.isAllWhitelist = function(){
+        var flagWhiteList = false;
+        FilterStorage.subscriptions.forEach(function(subscription){
+            if(subscription && subscription.defaults && subscription.defaults[0] == "whitelist"){
+                subscription.filters.forEach(function(filter){
+                    if(filter && filter.text == "@@||*^$document"){
+                        flagWhiteList = true;
+                    }
+                });
+            }
+        });
+        return flagWhiteList;
+    }
+
+    $("#enabled").click(toggleEnabled);
+    document.getElementById("allEnabled").addEventListener("click", toggleAllEnabled, false);
 }
 
 function toggleEnabled() {
-    var disabled = document.body.classList.toggle("disabled");
-    if (disabled) {
+    var disabled = $('#enabled').data('checked');
+    if (!disabled) {
         var host = getDecodedHostname(page.url).replace(/^www\./, "");
         var filter = Filter.fromText("@@||" + host + "^$document");
-        if (filter.subscriptions.length && filter.disabled)
-            filter.disabled = false;
-        else {
-            filter.disabled = false;
-            FilterStorage.addFilter(filter);
-        }
+        FilterStorage.addFilter(filter);
     } else {
         var filter = checkWhitelisted(page);
-        while (filter) {
+        if(filter){
             FilterStorage.removeFilter(filter);
-            if (filter.subscriptions.length)
-                filter.disabled = true;
-            filter = checkWhitelisted(page);
         }
+    }
+}
+
+function toggleAllEnabled() {
+    var disabled = $('#allEnabled').is(':checked');
+    var filter = Filter.fromText("@@||" + "*" + "^$document");
+    if (!disabled) {
+        FilterStorage.addFilter(filter);
+    } else {
+        FilterStorage.removeFilter(filter);
     }
 }
 

@@ -1,0 +1,100 @@
+
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title></title>
+        <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+    </head>
+    <body>
+        <style media="screen">
+            body{
+                margin: 0;
+                overflow: hidden;
+                font-family: 'Roboto', sans-serif;
+                background: rgba(0, 0, 0, 0.65);
+                color: #fff;
+                padding: 8px;
+            }
+            
+            .notif-head {
+                float: left;
+                width: 100%;
+            }
+
+            .notif-head img, .notif-head h2{
+                float: left;
+            }
+            
+            .notif-head img{
+                width: 36px;
+                margin-right: 10px;
+            }
+            
+            .notif-head h2{
+                font-size: 14px;
+            }
+            
+            .notif-txt p {
+                font-size: 12px;
+            }
+            
+            .notif-btn {                
+                float: left;
+                width: 100%;
+            }
+            
+            .notif-btn button {
+                border-radius: 2px;
+                float: right;
+                margin:0 10px 10px 0;
+                background: transparent;
+                color: #fff;
+                border: 1px solid rgba(255, 255, 255, 0.5);
+                cursor: pointer;
+                transition: all .2s ease;
+            }
+            
+            .notif-btn button.no-border {
+                border: none;
+            }
+            
+            .notif-btn button:hover {
+                background: #fff;
+                color: #000;
+            }
+
+
+        </style>
+            <div class="notif-head">
+                <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAACXBIWXMAAAsSAAALEgHS3X78AAAD20lEQVRo3u2aQU8bRxTHfzO73hCFYtSokap2RcLFRyz55FMs9eJb3U9Q5xPU7Segt5xa+Ab0G8DNl6jmtCdL+GgpqkBbKaJVATeIAN6d6cFjuiG7sGuvCSg8ycKaWc/8fzPvvTHzLLTW5GGlSvUp0DCvMlCMeWwb6ACb/a63k8e8YlqAUqVaA1aB5xk/ug2s9rte56MAlCrVRWAD+HbKRdwCmv2ud3RjAKVKtQxsAkvkYwOgNolbZQYw4jsJPn7jEHKCQL1O/G/AC+BZv+uJftcTwDPgO9OXZEWgYxZoNjtQqlR3gJUrfLnV73q7KWJnDfg+4ZFev+uVcwcoVaot4NeE7hf9rreRcTebBiRuN3/ud73V3ADMqu0mTJZZ/KUU/HtCPDxNk5nSxkDzipXamDRqzRnwY0I8tPIM4mZM217abb4GYg3opZwzO4DJPHGBO7X4iK3FtC2Zua80O8XgsRlh/a8/O23XrUWaFpOejfQDHAE75i/A/Dq8/uHJ14MYN62Z036yIG67bmPnwcPWvFLPAb4KhjzUilnagWVxIG3eSUkI2+Wzd2t139/MBNB23UVzYK1kmdwRCimuf+5UyaxcPaBW9/2jtC5Ujop3hGJOKiRQiIicE/nsxqkeASkNQy1RBvJcX4CuGE2dzDHwuTXkMyucqdtcLIQAMO8teBtaHISF6bLQrMVPO7fkjts9wD3Apw5gz2pgD5s/tAXAsgipEtwdgF/0HK+I5G8N3zDkJ3F6+11oC+d98cZeUWAL5/YDeNqeqO8+C+VlT1AT9d0agIY45xEffkV/hKYhzm8/wDKKl+Lkg/aX4oTlu7ADY4g0bfdB/EkAnGvx0cSlmTvpZNn9fxCJI7L/VxYXyNkBZKymVNcqbdfdBZZsofmycHbjvqaAN8MHBKNd6NV9v5zVhRoAgRbsDx3UDYvfHzpj8QOuuGZMBKj7/g6jQgXnWkYHnLnf7w+dsfsMGN0HJVZtrr1eb7vuRUlJovmiMMztPuiynSjJP0EBhUglPlUWMgPUgJ5itDqDMP9vlYehzd+BMxbfA8rXiU+1A5GdeK805AjFY3uII6arM59qyWFgRzPOet33W2k/n7lK2XbdBqMb4yLAghVQtILMWUoBh0GBY2WNm/aAZt33O1nGmahObHZjA1PklmgWrJCiFaQS/ja0+Te0xu4CsA6sxl3ezgQgAlIzbrUCYAtN0QqYl/EH37GyGIR2NJttA600vj4TgAhIk1HFZmkMsiADCnI09pmSHCsrKnzPrPjGtHOLvH6tYtyqZV5JhfDchOcOcAmkaUDGv6XoAWt5Ch/bf4NFoarJVyueAAAAAElFTkSuQmCC" alt="">   
+                <h2 class="no-margin white-font padding-3">Este sitio no es seguro</h2>
+            </div>
+            <div class="notif-txt">
+                <p>
+                    Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                </p>
+            </div>
+            <div class="notif-btn">
+                <button id="trustnav-exit-site" onclick="redirect()" type="button" name="button">Sacame de aqui</button>
+                <button id="trustnav-keep-site" onclick="destroyIframe()" class="no-border" type="button" name="button">Seguir navegando</button>
+            </div>
+    </body>
+
+    <script type="text/javascript">
+        var destroyIframe = function() {
+            var doc = parent.document.getElementById(window.name);
+            doc.style.display = "none";
+        }
+
+        var redirect = function() {
+            var doc = parent.document;
+            var iframe = doc.getElementById(window.name);
+            iframe.style.display = "none";
+            doc.location.href = "http://www.trustnav.com"
+            //
+            // console.log(parent.document);
+        }
+
+    </script>
+</html>

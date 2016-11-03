@@ -9,7 +9,10 @@ Background.js contiene las variables globales, tambien inicializa actions y abre
 'use strict';
 
 var GlobalCounter = {};
-var BlockEnabled = {};
+var tabsBlockeds = {};
+var BlockEnabled = {
+    allEnable : true
+};
 var tabTimeStamp = {};
 var ClientToken = null;
 

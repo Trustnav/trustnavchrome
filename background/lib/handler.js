@@ -8,6 +8,7 @@ Handler.js es un objeto que contiene las respuestas para cada mensaje, cada func
 'use strict';
 
 var HandlerMessages = {};
+var actualUrl = false;
 
 var scopeStats = require.scopes["stats"];
 
@@ -37,8 +38,17 @@ HandlerMessages.get_counter = function(message, request, callback) {
 
 
 HandlerMessages.change_status = function(message, request, callback) {
+    if (!message.value) {
+        tabsBlockeds[message.domain] = true;
+    }
+
     BlockEnabled[message.domain] = message.value;
 }
+
+HandlerMessages.change_status_all = function(message, request, callback) {
+    BlockEnabled.allEnable = message.allEnable;
+}
+
 
 /**
  * @function get_config()
@@ -52,7 +62,7 @@ HandlerMessages.change_status = function(message, request, callback) {
 
 HandlerMessages.get_config = function(message, request, callback) {
     callback({
-        'enabled': BlockEnabled[message.domain] !== false ? true : false,
+        'enabled': BlockEnabled[message.domain] !== false ? false : true,
         'counter': GlobalCounter[message.domain] ? GlobalCounter[message.domain] : 0
     });
 }
@@ -147,6 +157,25 @@ HandlerMessages.getRating = function(message, request, callback) {
     });
 }
 
+HandlerMessages.getStatus = function(message, request, callback) {
+    callback(BlockEnabled.allEnable);
+}
+
+HandlerMessages.checkUrl = function(message, request, callback) {
+
+    if (!actualUrl) {
+        actualUrl = message.domain;
+        return callback(false);
+    }
+
+    if (actualUrl == message.domain) {
+        return callback(true);
+    }
+
+    return callback(false);
+}
+
+
 
 /**
  * @function handlerMessages()
@@ -154,6 +183,7 @@ HandlerMessages.getRating = function(message, request, callback) {
  * @desc Determinara y ejecutara cada funcion que sea pedida.
  *
  */
+
 var handlerMessages = function(onRequest) {
     onRequest.addListener(function(message, request, callback) {
         if (HandlerMessages[message.action]) {

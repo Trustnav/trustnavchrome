@@ -97,7 +97,7 @@ span {
 }
 
 .tn-panel img {
-    width: 40px;
+    width: 30px;
     margin: auto;
 }
 
@@ -124,8 +124,8 @@ span {
 /*BLOCKS (SECOND PANEL)*/
 
 .tn-blocks h1 {
-    margin: auto;
-    font-size: 1.8rem;
+    margin: 5px auto;
+    font-size: 1.5rem;
 }
 
 .tn-blocks span {
@@ -139,11 +139,11 @@ span {
 
 .starRating:not(old) {
     display: inline-block;
-    width: 250px;
+    width: 200px;
     height: 38px;
     overflow: hidden;
     vertical-align: bottom;
-    margin: 1rem 16px;
+    margin: 5px auto;
     transition: 1s ease;
 }
 
@@ -159,16 +159,16 @@ span {
     background: url('../img/star-off.svg');
     background-size: contain;
     margin: 0 5px;
-    width: 40px;
-    height: 40px;
+    width: 30px;
+    height: 30px;
     cursor: pointer;
 }
 
 .starRating:not(old) > label:before {
     content: '';
     display: block;
-    width: 40px;
-    height: 40px;
+    width: 30px;
+    height: 30px;
     background: url('../img/star-on.svg');
     background-size: contain;
     opacity: 0;
@@ -193,8 +193,8 @@ span {
 }
 
 .tn-ranking div:nth-child(1) h1 {
-    font-size: 1.8rem;
-    margin: auto;
+    font-size: 1.5rem;
+    margin: 0 1rem;
 }
 
 .tn-ranking div:nth-child(1) img {
@@ -210,7 +210,7 @@ span {
 
 .tn-ranking .bars {
     width: 0%;
-    padding-top: 16px;
+    padding-top: 8px;
     transition: all 1s ease
 }
 
@@ -419,6 +419,21 @@ input:checked + .slider:before {
     opacity: 1;
 }
 
+/*
 .textBlocked{
     font-size: 17px;
+    color: red;
+}
+*/
+
+.spaces-between{
+    justify-content: space-between;
+}
+
+.height-25-px{
+    height: 25px;
+}
+
+.padding-5{
+    padding: 5px;
 }

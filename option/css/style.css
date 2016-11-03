@@ -1,0 +1,169 @@
+html,
+body {
+    height: 100%;
+    font-family: 'Roboto', sans-serif;
+    background: #ECEFF1;
+/*    overflow: hidden;*/
+}
+
+.tn-opt-wrap {
+    min-height: 500px;
+    max-width: 1000px;
+    margin: 2rem auto 0 auto;
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+.tn-opt-wrap .w3-panel {
+    background: #ECEFF1;
+}
+
+.flex {
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex;
+}
+
+.flex-c {
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -webkit-flex-direction: column;
+    -ms-flex-direction: column;
+    flex-direction: column;
+}
+
+.align-items-c {
+    -webkit-box-align: center;
+    -webkit-align-items: center;
+    -ms-flex-align: center;
+    -ms-grid-row-align: center;
+    align-items: center;
+}
+
+.justify-c {
+    -webkit-box-pack: center;
+    -webkit-justify-content: center;
+    -ms-flex-pack: center;
+    justify-content: center;
+}
+
+.btn-wrap {
+    min-height: 111px;
+}
+
+.btn-wrap-del {
+    min-height: 52px;
+}
+
+.logo-wrap {
+    padding: 0 16px;
+}
+
+.logo-wrap img {
+    margin-right: 1rem;
+}
+
+.logo-wrap img,
+.logo-wrap h1 {
+    display: inline-block;
+}
+
+.w3-navbar li  {
+    cursor: pointer;
+}
+
+.w3-navbar li a:hover {
+    background: #26A24F;
+    color:#fff;
+}
+
+.tab-active {
+    position:relative;
+}
+
+.tab-active:before {
+    content: " ";
+    position: absolute;
+    width: 0;
+    height: 0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-bottom: 5px solid white;
+    top: 33px;
+    left: 0;
+    right: 0;
+    margin: 0 auto;
+}
+
+.selec-items {
+    height: 270px;
+    padding-top: 8px;
+}
+
+.selec-items label{
+    display: block;
+}
+
+.selec-items select{
+    width: 100%;
+    height: 218px;
+}
+
+.select-wrap {
+    height: 240px;
+}
+
+.btn-remove-wrap {
+    height: 240px;
+}
+
+.btn-remove-wrap button{
+    width: initial;
+    margin: 22px auto;
+    height: 36px;
+}
+
+.add-input button{
+    width: initial;
+    margin: 20px auto 0 auto;
+    display: block;
+}
+
+.add-btn-wrapp button {
+    margin: 22px auto;
+    display: block;
+}
+
+@media only screen and (max-width: 1000px) {
+    .tn-opt-wrap {
+        max-width: 100%;
+        margin: 0;
+        height: 100%;
+        overflow: auto;
+    }
+    
+    .btn-remove-wrap {
+        height: 62px;
+    }
+    
+    .selec-items button, .add-input button {
+        margin:auto; 
+        width:100%;
+    }
+}
+
+#cancel-subscription {
+    background-color: #d97878 !important;
+}
+.display-none {
+    display:none;
+}
+
+.full-width {
+    width: 100%
+}

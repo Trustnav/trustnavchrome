@@ -17,27 +17,39 @@
 		<div class="tn-panel grey flex tn-status">
 			<div class="flex"> <img class="trusnav-logo" src="img/tn-green.svg" alt=""> </div>
 			<div class="flex-c width-100">
-				<p class="text-primary isTrusted">Trusted site</p> <span class="text-secondary isEnabled">Adblocker enabled</span>
+				<p class="text-primary isTrusted" tkey="trustnav-disable"></p> 
+				<span class="text-secondary isEnabled" tkey="trustnav-is-block-enabled"></span>
 			</div>
 			<div class="flex">
-				<!-- SWITCH POR DEFECTO ENCENDIDO - PARA APAGARLO REMOVER "checked" en el tag INPUT   -->
+				<!--  SWITCHPOR DEFECTO ENCENDIDO - PARA APAGARLO REMOVER "checked" en el tag INPUT   -->
 				<label class="switch margin-auto tooltip">
-					<span class="tooltiptext">Disable Trustnav in this site/domain</span>
-					<input type="checkbox" id="enabled" checked="checked" />
+					<span class="tooltiptext allEnableInfo" tkey="trustnav-all-disable"></span>
+					<input type="checkbox" id="allEnabled" checked="checked" />
 					<div class="slider round"></div>
 				</label>
 			</div>
 		</div>
-		<div class="tn-panel white flex tn-blocks">
+
+		<div class="tn-panel white flex tn-blocks height-25-px padding-5">
+            <p tkey="trustnav-on-this-site" class="text-primary textBlocked " style="    font-size: 12px;"></p>
+		</div>
+        <div class="tn-panel white flex tn-blocks" style="height: 50px;">
+			<!-- <div class="">
+				<p class="text-primary">
+					En este sitio:
+				</p>
+			</div> -->
 			<div class="flex">
 				<h1 id="adsBlocked" class="text-primary">0</h1>
 			</div>
 			<div class="flex-c width-100">
-				<p class="text-primary textBlocked">Ads blockeds on this site</p> <span class="text-secondary" id="hideIconNumber"></span>
+                <p class="text-primary textBlocked" tkey="trustnav-ads-blockeds" style="margin: 2px 0 0 1rem;"></p> 
+				<span class="text-secondary" id="enabled">Enable on this site </span>
 			</div>
+
 		</div>
-		<div id="starRatingContainer" class="tn-panel-x2 flex-c grey tn-rating" style="height:120px;">
-			<p class="text-primary">Rate this site</p>
+		<div id="starRatingContainer" class="tn-panel-x2 flex-c grey tn-rating" style="height:100px;">
+			<p class="text-primary" tkey="trustnav-rate-site" style="font-size:12px; text-align:center;"></p>
 			<div class="starRating">
 				<input id="rating5" type="radio" name="rating" value="5">
 				<label for="rating5"></label>
@@ -53,24 +65,26 @@
 		</div>
 
 		<div class="tn-panel grey flex lastCommentWrap" style="display:none;">
-			<p class="text-primary">Your last comment about this site </p>
-			<p class="text-secondary no-margin lastComment crop-long-text" title="Edit your comment">Give us a comment about this site!</p>
+			<p class="text-primary" tkey="trustnav-last-comment"></p>
+			<p class="text-secondary no-margin lastComment crop-long-text" title="Edit your comment" >Give us a comment about this site!</p>
 		</div>
 		<div id="commentRating" class="tn-panel-x2 flex-c grey tn-rating" style="display:none;">
-			<p class="text-primary">Send us your comment</p>
+			<p class="text-primary" tkey="trustnav-give-us-comment"></p>
 			<textarea name="message" class="messageArea no-resize" rows="6" cols="40" maxlength="180"></textarea>
 			<div class="spacesBeetwen">
 				<span class="thanksForVote"></span>
 				<input type="submit" class="submittBtn" value="Send">
 			</div>
 		</div>
-		<div class="tn-panel white flex-c tn-ranking" style="padding:10px;">
-			<p class="text-primary">Trustnav community ranking</p>
-			<h3 class="no-info" style='text-align: center; display:none;'>There isn't enough information about this site yet. Please help leaving your rating.</h3>
+		<div id="ratingText" class="tn-panel white flex-c tn-ranking">
+			<p class="text-primary" tkey="trustnav-community-ranking" style="font-size:12px; padding:5px;"></p>
+			<h3 class="no-info" style='text-align: center; display:none;' tkey="trustnav-not-enough-info"></h3>
 			<div class="flex ratingInfo">
 				<div class="flex-c">
 					<h1 class="text-primary averageRating"></h1>
-					<div class="flex"> <img src="img/user.svg" alt=""> <small class="text-secondary totalClients"></small> </div>
+                    <div class="flex" style="padding: 0 0 10px 16px; width: 60px;"> 
+					    <img src="img/user.svg" alt="" style="margin:0 5px 0 0;"> <small class="text-secondary totalClients"></small> 
+				    </div>
 				</div>
 				<div class="bars">
 					<div class="rating-bar-3"></div>
@@ -79,11 +93,11 @@
 				</div>
 			</div>
 		</div>
-		<!-- <div class="tn-panel-half grey tn-options">
-				<div class="flex" id="optionsMenu"> <img src="img/settings.svg" alt="">
-					<p class="text-primary">Options</p>
-				</div>
-			</div> -->
+		<div class="tn-panel-half grey tn-options">
+			<div class="flex" id="optionsMenu"> <img src="img/settings.svg" alt="">
+				<p class="text-primary"><a href="../option/index.html" target="_blank">Options</a></p>
+			</div>
+		</div>
 	</div>
 </body>
 <script src='../config/config.js'></script>
@@ -94,5 +108,6 @@
 <script src="./lib/initialize.js"></script>
 <script src='./lib/adblocker.js'></script>
 <script src="./popup.js"></script>
+<script src="./lib/lang.js" charset="utf-8"></script>
 
 </html>

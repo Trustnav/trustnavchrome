@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title tkey="toptions-title">Trustnav Options</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="css/w3.css">
+    <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet"> 
+    <link rel="stylesheet" href="css/helper.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+    <!-- Begin -->
+    <div class="w3-card-2 w3-white tn-opt-wrap">
+
+        <!-- Header -->
+        <div class="w3-green logo-wrap flex align-items-c"> 
+            <img src="../popup/img/logo.png" alt="">
+            <h2 tkey="toptions-header">Trustnav Options</h2> 
+        </div>
+
+        <!-- Tabs -->
+        <ul class="w3-navbar w3-green">
+            <li><a class="tabs-selected tab-active" data-order="0" tkey="toptions-tab1">Subscriptions</a></li>
+            <li><a class="tabs-selected" data-order="1" tkey="toptions-tab2">Filters</a></li>
+            <li><a class="tabs-selected" data-order="2" tkey="toptions-tab3">Domains</a></li>
+        </ul>
+
+        <!-- Container - 0 -->
+        <div id="tab-0" class="tab-container w3-container" style="display:block;">
+            <div class="w3-panel">
+                <div class="w3-row">
+                    <div class="w3-col l10">
+                        <p tkey="toptions-update-title">Actualizar EasyList</p>
+                        <p class="w3-text-grey"> <small tkey="toptions-update-subtitle">Actualiza de forma manual todos tus listados de EasyList.</small> </p>
+                    </div>
+                    <div class="w3-col l2 flex align-items-c justify-c btn-wrap">
+                        <button id="update-subscriptions" class="w3-btn w3-round w3-border w3-white w3-hover-green" tkey="toptions-update-button">Update</button>
+                    </div>
+                </div>
+            </div>
+            <div class="w3-panel">
+                <div class="w3-row">
+                        <p tkey="toptions-new-title">Nueva EasyList</p>
+                        <p> <small class="w3-text-grey" tkey="toptions-new-subtitle" tkey="toptions-new-subtitle">Agrega la easylist que tu deseas</small> </p>
+                        <!-- New Subscription -->
+                        <div id="new-subscription-container">
+                            <form id="new-subscription-form">
+                                <div class="w3-row">
+                                    <div class="w3-col l10 m12 s12">
+                                        <label class="w3-text-grey" tkey="toptions-subs-title">Title</label>
+                                        <input data-elem="title" class="w3-input w3-border" type="text" required> 
+                                        <label class="w3-text-grey" tkey="toptions-subs-url">Url</label>
+                                        <input data-elem="url" type="url" required class="w3-input w3-border" placeholder="http://example.com"> 
+                                    </div>
+                                    <div class="w3-col l2 add-btn-wrapp">
+                                        <button id="add-subscription" class="w3-btn w3-round w3-border w3-white w3-hover-green" tkey="toptions-add-button">Add</button>
+                                    </div>
+                                </div>
+                                <p></p>
+                            </form>
+                        </div>
+                </div>
+            </div>
+            <div class="w3-panel">
+                <div class="w3-row">
+                    <div class="w3-col l10 m10 s9">
+                        <p tkey="toptions-added-easylist">EasyList added</p>
+                    </div>
+                    <div class="w3-col l2 m2 s3 flex align-items-c justify-c btn-wrap-del">
+                        <button id="delete-subscription" class="w3-btn w3-round w3-border w3-white w3-hover-red" tkey="toptions-delete-button">Delete</button>
+                    </div>
+                    <div id="list-easylist" class="w3-col l12"></div>
+                </div>
+            </div>
+        </div>
+
+        
+
+        <!-- Container - 1 -->
+        <div id="tab-1" class="tab-container w3-container display-none">
+            <form>
+                <p tkey="toptions-filter-title">Carga tus propios filtros personalizados</p>
+                <div class="w3-row add-input">
+                    <div class="w3-col l10 m12 s12">
+                        <label class="w3-text-grey" tkey="toptions-filter-field">New filter</label>
+                        <input id="text-filter" class="w3-input w3-border" type="text" required=""> 
+                    </div>
+                    <div class="w3-col l2 m12 s12 flex align-items-c justify-c" style="height:62px;">
+                        <button id="add-filter" class="w3-btn w3-round w3-border w3-white w3-hover-green" tkey="toptions-filter-add-button">Add</button>
+                    </div>
+                </div>
+                <div class="w3-row selec-items">
+                    <div class="w3-col l10 m12 s12 select-wrap">
+                        <label class="w3-text-grey" tkey="toptions-filter-list">Added filters</label>
+                        <select id="list-filter" name="selected" multiple class="w3-border">
+                        </select>
+                    </div>   
+                    <div class="w3-col l2 m12 s12 btn-remove-wrap flex">
+                        <button id="delete-filter" class="w3-btn w3-round w3-border w3-white w3-hover-red" tkey="toptions-filter-delete-button">Remove</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <!-- Container - 2 -->
+        <div id="tab-2" class="tab-container w3-container display-none">
+            <form>
+                <p tkey="toptions-domain-title">Carga todos tus dominios autorizados</p>
+                <div class="w3-row add-input">
+                    <div class="w3-col l10 m12 s12">
+                        <label class="w3-text-grey" tkey="toptions-domain-field">New domain</label>
+                        <input placeholder="example.com" id="text-domain" class="w3-input w3-border" type="text" required=""> 
+                    </div>
+                    <div class="w3-col l2 m12 s12 flex align-items-c justify-c" style="height:62px;">
+                        <button id="add-domain" class="w3-btn w3-round w3-border w3-white w3-hover-green" tkey="toptions-domain-add-button">Add</button>
+                    </div>
+                </div>
+                <div class="w3-row selec-items">
+                    <div class="w3-col l10 m12 s12 select-wrap">
+                        <label class="w3-text-grey" tkey="toptions-domain-list">Added domains</label>
+                        <select id="list-domain" name="selected" multiple class="w3-border">
+                        </select>
+                    </div>   
+                    <div class="w3-col l2 m12 s12 btn-remove-wrap flex">
+                        <button id="delete-domain" class="w3-btn w3-round w3-border w3-white w3-hover-red" tkey="toptions-domain-delete-button">Remove</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <!-- Toast -->
+        <div id="snackbar"></div>
+    </div>
+    <!-- END -->
+</body>
+<script src='../components/jquery/dist/jquery.min.js'></script>
+<script src="../popup/lib/lang.js" charset="utf-8"></script>
+<script type="text/javascript" src="../adblock/lib/polyfills/promise.js"></script>
+<script type="text/javascript" src="../adblock/lib/polyfills/fetch.js"></script>
+<script type="text/javascript" src="../adblock/ext/common.js"></script>
+<script type="text/javascript" src="../adblock/ext/content.js"></script>
+<script src='js/actions.js'></script>
+<script src='js/helper.js'></script>
+<script src='js/filters.js'></script>
+<script src='js/subscriptions.js'></script>
+</html>

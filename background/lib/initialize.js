@@ -76,8 +76,7 @@ actions.onLogoChange = function() {
                 }
 
                 var domain = parseDomain(url.hostname);
-
-                if (BlockEnabled[domain] !== false) {
+                if (BlockEnabled[domain] !== false && BlockEnabled.allEnable) {
                     var domain = {
                         domain: url.host,
                     }
@@ -89,7 +88,7 @@ actions.onLogoChange = function() {
                     if (validateUrl(url)) {
                         HandlerMessages.getRating(domain,{},function(data) {
                             if (data && data.ratingData) {
-                                if (data.ratingData.averageRating < 3 && data.ratingData.averageRating != 0) {
+                                if (data.ratingData.averageRating < 3 && data.ratingData.averageRating != 0 && data.ratingData.totalClients>5) {
                                     chrome.browserAction.setIcon({
                                         path: "../popup/img/logo-rojo.png"
                                     });
@@ -129,7 +128,7 @@ actions.onUpdateTab = function() {
     });
 
     chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
-
+debugger
         if (changeInfo.url) {
             var url = new URL(changeInfo.url);
             var date;
@@ -140,9 +139,15 @@ actions.onUpdateTab = function() {
                 url: parseDomain(url.host), // dominio
                 start: +new Date, // timeStamp
             }
+
             var domain = {
                 domain: parseDomain(url.host),
             }
+
+            if (BlockEnabled.allEnable === false) {
+                BlockEnabled[domain.domain] = false;
+            }
+
 
             if (allowedProtocol) {
                 if (BlockEnabled[parseDomain(domain.domain)] === false) {
@@ -151,8 +156,8 @@ actions.onUpdateTab = function() {
                     });
                 } else {
                     HandlerMessages.getRating(domain,{},function(data) {
-                        if (data) {
-                            if (data.ratingData.averageRating < 3 && data.ratingData.averageRating != 0) {
+                        if (data && data.ratingData) {
+                            if (data.ratingData.averageRating < 3 && data.ratingData.averageRating != 0 && data.ratingData.totalClients >= 5) {
                                 chrome.browserAction.setIcon({
                                     path: "../popup/img/logo-rojo.png"
                                 });
@@ -307,7 +312,6 @@ actions.adsBlocked = function() {
                         tabsFlag[tab[0].id] = {
                             flag : response
                         };
-
                     }
                 });
             }

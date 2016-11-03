@@ -47,7 +47,8 @@ function getRating(domain) {
     },
     function(response) {
         if (response.ratingData) {
-            if (response.ratingData.totalClients >= 5) {
+
+            if (response.ratingData.totalClients > 5) {
                 $(".totalClients").html(response.ratingData.totalClients);
                 $(".averageRating").html(response.ratingData.averageRating);
                 $(".no-info").hide();
@@ -60,6 +61,27 @@ function getRating(domain) {
                 }
 
                 $(".bars").addClass("width-transation");
+                
+                if (isAdBlockEnabled) {
+                    if (response.ratingData.averageRating < 3 && response.ratingData.averageRating != 0) {
+                        $(".trusnav-logo").attr("src","img/tn-red.svg");
+                        $(".isTrusted").attr("tkey","trustnav-is-no-trusted");
+
+                        chrome.browserAction.setIcon({
+                            path: "../popup/img/logo-rojo.png"
+                        });
+
+                    } else {
+                        $(".trusnav-logo").attr("src","img/tn-green.svg");
+                        $(".isTrusted").attr("tkey","trustnav-is-trusted");
+
+                        chrome.browserAction.setIcon({
+                            path: "../popup/img/logo.png"
+                        });
+                    }
+                }
+
+                translateDinamic();
             }
         }
     });
@@ -76,7 +98,8 @@ function validateUrl(url) {
     var toBlock = {
         blockedProtocol : [
             "about:",
-            "chrome:"
+            "chrome:",
+            "chrome-extension:"
         ],
         blockedHostname : [
             "localhost"
@@ -89,6 +112,7 @@ function validateUrl(url) {
         return false;
     }
 }
+
 /**
  * @function parseDomain
  * @param {object} domain
